@@ -6,7 +6,7 @@
  * http://720kb.githb.io/angular-socialshare
  * 
  * MIT license
- * Tue Jun 28 2016
+ * Tue Jul 26 2016
  */
 /*global angular*/
 /*eslint no-loop-func:0, func-names:0*/
@@ -16,7 +16,7 @@
 
   var directiveName = 'socialshare'
     , serviceName = 'Socialshare'
-    , socialshareProviderNames = ['facebook', 'facebook-messenger', 'twitter', 'linkedin', 'google', 'pinterest', 'tumblr', 'reddit', 'stumbleupon', 'buffer', 'digg', 'delicious', 'vk', 'pocket', 'wordpress', 'flipboard', 'xing', 'hackernews', 'evernote', 'whatsapp', 'telegram', 'viber', 'skype', 'email', 'ok']
+    , socialshareProviderNames = ['facebook', 'facebook-messenger', 'twitter', 'naver','linkedin', 'google', 'pinterest', 'tumblr', 'reddit', 'stumbleupon', 'buffer', 'digg', 'delicious', 'vk', 'pocket', 'wordpress', 'flipboard', 'xing', 'hackernews', 'evernote', 'whatsapp', 'telegram', 'viber', 'skype', 'email', 'ok']
     , socialshareConfigurationProvider = /*@ngInject*/ function socialshareConfigurationProvider() {
 
       var socialshareConfigurationDefault = [{
@@ -54,6 +54,16 @@
         'provider': 'facebook-messenger',
         'conf': {
           'url': ''
+        }
+      },
+      {
+        'provider': 'naver',
+        'conf': {
+          'url': '',
+          'title': '',
+          'trigger': 'click',
+          'popupHeight': 600,
+          'popupWidth': 500
         }
       },
       {
@@ -502,6 +512,20 @@
         'Twitter', 'toolbar=0,status=0,resizable=yes,width=' + attrs.socialsharePopupWidth + ',height=' + attrs.socialsharePopupHeight
         + ',top=' + ($window.innerHeight - attrs.socialsharePopupHeight) / 2 + ',left=' + ($window.innerWidth - attrs.socialsharePopupWidth) / 2);
     }
+    , manageNaverShare = function manageNaverShare($window, attrs) {
+      var urlString = 'http://share.naver.com/web/shareView.nhn?';
+
+      if (attrs.socialshareText) {
+        urlString += 'text=' + encodeURIComponent(attrs.socialshareText);
+      }
+      //default to the current page if a URL isn't specified
+      urlString += '&url=' + encodeURIComponent(attrs.socialshareUrl || $window.location.href);
+
+      $window.open(
+        urlString,
+        'Naver', 'toolbar=0,status=0,resizable=yes,width=' + attrs.socialsharePopupWidth + ',height=' + attrs.socialsharePopupHeight
+        + ',top=' + ($window.innerHeight - attrs.socialsharePopupHeight) / 2 + ',left=' + ($window.innerWidth - attrs.socialsharePopupWidth) / 2);
+    }
     , manageGooglePlusShare = function manageGooglePlusShare($window, attrs) {
 
       $window.open(
@@ -783,6 +807,7 @@
       this.emailShare = manageEmailShare;
       this.facebookShare = manageFacebookShare;
       this.twitterShare = manageTwitterShare;
+      this.naverShare = manageNaverShare;
       //**** Fb Messenger can't open without an element clicked (href)
       //this.facebookMessengerShare = facebookMessengerShare;
       this.stumbleuponShare = manageStumbleuponShare;
@@ -822,6 +847,10 @@
           }
           case 'twitter': {
             this.twitterShare($window, serviceShareConf.attrs);
+            break;
+          }
+          case 'naver': {
+            this.naverShare($window, serviceShareConf.attrs);
             break;
           }
           case 'pinterest': {
@@ -979,6 +1008,7 @@
       , 'facebook': manageFacebookShare
       , 'facebook-messenger': facebookMessengerShare
       , 'twitter': manageTwitterShare
+      , 'naver': manageNaverShare
       , 'google': manageGooglePlusShare
       , 'reddit': manageRedditShare
       , 'stumbleupon': manageStumbleuponShare
@@ -1008,3 +1038,4 @@
   .service(serviceName, socialshareService)
   .directive(directiveName, socialshareDirective);
 }(angular));
+
